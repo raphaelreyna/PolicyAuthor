@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/raphaelreyna/policyauthor/pkg/maputils"
 	"github.com/raphaelreyna/policyauthor/pkg/policy"
 	"gopkg.in/yaml.v3"
 )
@@ -41,17 +42,14 @@ func (s *RegexSpec) UnmarshalYAML(value *yaml.Node) error {
 }
 
 func (s *RegexSpec) Evaluate(v map[string]interface{}) (bool, error) {
-	val, ok := v[s.Key]
-	if !ok {
-		return false, policy.NewKeyNotFoundError(s.Key)
-	}
+	if val, found := maputils.RecursiveGet(s.Key, v); found {
+		if val, ok := val.(string); ok {
+			return s.r.MatchString(val), nil
+		}
 
-	str, ok := val.(string)
-	if !ok {
 		return false, fmt.Errorf("key %s is not a string", s.Key)
 	}
-
-	return s.r.MatchString(str), nil
+	return false, policy.NewKeyNotFoundError(s.Key)
 }
 
 func (s *RegexSpec) ValueReturnEnabled() bool {
@@ -59,21 +57,19 @@ func (s *RegexSpec) ValueReturnEnabled() bool {
 }
 
 func (s *RegexSpec) EvaluateWithReturnValue(v map[string]interface{}) (interface{}, bool, error) {
-	val, ok := v[s.Key]
-	if !ok {
-		return nil, false, policy.NewKeyNotFoundError(s.Key)
-	}
+	if val, found := maputils.RecursiveGet(s.Key, v); found {
+		val, ok := val.(string)
+		if !ok {
+			return nil, false, fmt.Errorf("key %s is not a string", s.Key)
+		}
 
-	str, ok := val.(string)
-	if !ok {
-		return nil, false, fmt.Errorf("key %s is not a string", s.Key)
-	}
+		if !s.r.MatchString(val) {
+			return nil, false, nil
+		}
 
-	if !s.r.MatchString(str) {
-		return nil, false, nil
+		return formatWithRegex(s.r, val, s.Return), true, nil
 	}
-
-	return formatWithRegex(s.r, str, s.Return), true, nil
+	return nil, false, policy.NewKeyNotFoundError(s.Key)
 }
 
 // formatWithRegex takes a compiled regex, a target string, and a format string.

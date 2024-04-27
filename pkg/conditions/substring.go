@@ -7,16 +7,16 @@ import (
 	"github.com/raphaelreyna/policyauthor/pkg/policy"
 )
 
-type ContainsSpec struct {
+type SubstringSpec struct {
 	Key   string `yaml:"key"`
 	Value string `yaml:"value"`
 }
 
-func (s *ContainsSpec) String() string {
-	return fmt.Sprintf("[%s] CONTAINS %+v", s.Key, s.Value)
+func (s *SubstringSpec) String() string {
+	return fmt.Sprintf("[%s] SUBSTRING %+v", s.Key, s.Value)
 }
 
-func (s *ContainsSpec) Evaluate(v map[string]any) (bool, error) {
+func (s *SubstringSpec) Evaluate(v map[string]any) (bool, error) {
 	if val, found := maputils.RecursiveGet(s.Key, v); found {
 		if val, ok := val.(string); ok {
 			return s.Value == val, nil

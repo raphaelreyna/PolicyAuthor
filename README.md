@@ -8,6 +8,16 @@ The PolicyAuthor package is a versatile library designed to evaluate policies de
 - _Dynamic Data Evaluation_: Evaluate policies against Go data structures to determine compliance with defined rules.
 - _Extensible_: Easily register new conditions to expand the functionality.
 
+### Built-in conditions
+
+- Logical conditions: and, or, not
+- equal
+- exists
+- range
+- regex
+- cidr
+- time
+
 ## Example: Implementing Access Control
 
 Here’s how you can use PolicyAuthor to enforce access control based on user location and request properties:

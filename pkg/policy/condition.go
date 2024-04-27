@@ -33,6 +33,14 @@ func (c *Condition) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 
+	if c.Type == "" {
+		return fmt.Errorf("condition type must be set")
+	}
+
+	if c.Spec == nil {
+		return fmt.Errorf("condition spec must be set")
+	}
+
 	return nil
 }
 

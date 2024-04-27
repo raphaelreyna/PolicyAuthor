@@ -3,6 +3,7 @@ package conditions
 import (
 	"fmt"
 
+	"github.com/raphaelreyna/policyauthor/pkg/maputils"
 	"github.com/raphaelreyna/policyauthor/pkg/policy"
 	"gopkg.in/yaml.v3"
 )
@@ -33,8 +34,8 @@ func (s *RangeSpec) UnmarshalYAML(value *yaml.Node) error {
 }
 
 func (s *RangeSpec) Evaluate(v map[string]interface{}) (bool, error) {
-	val, ok := v[s.Key]
-	if !ok {
+	val, found := maputils.RecursiveGet(s.Key, v)
+	if !found {
 		return false, policy.NewKeyNotFoundError(s.Key)
 	}
 
@@ -75,5 +76,4 @@ func (s *RangeSpec) Evaluate(v map[string]interface{}) (bool, error) {
 	default:
 		return false, fmt.Errorf("RangeSpec error: both lower and upper bounds are nil")
 	}
-
 }

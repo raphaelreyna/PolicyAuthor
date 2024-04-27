@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/raphaelreyna/policyauthor/pkg/maputils"
 	"github.com/raphaelreyna/policyauthor/pkg/policy"
 	"gopkg.in/yaml.v3"
 )
@@ -63,7 +64,7 @@ func (s *TimeSpec) Evaluate(v map[string]interface{}) (bool, error) {
 		layout = s.Layout
 	}
 
-	if val, found := v[s.Key]; found {
+	if val, found := maputils.RecursiveGet(s.Key, v); found {
 		if val, ok := val.(string); ok {
 			t, err := time.Parse(time.RFC3339, val)
 			if err != nil {

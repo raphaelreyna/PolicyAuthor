@@ -20,32 +20,41 @@ type Policy struct {
 	Conditions []*Condition `yaml:"conditions"`
 }
 
-type valueReturner interface {
+type ValueReturner interface {
 	ValueReturnEnabled() bool
 	EvaluateWithReturnValue(v map[string]any) (any, bool, error)
 }
 
-func (p *Policy) Evaluate(v map[string]any) (value any, hit bool, err error) {
+type ValueReturnerNil struct{}
+
+func (p *Policy) Evaluate(evaluationContext map[string]any) (value any, hit bool, err error) {
+	if len(evaluationContext) == 0 {
+		return nil, false, fmt.Errorf("evaluation context is empty")
+	}
+
 	for _, c := range p.Conditions {
-		if vr, ok := c.Spec.(valueReturner); ok {
+		if vr, ok := c.Spec.(ValueReturner); ok {
 			if !vr.ValueReturnEnabled() {
-				if hit, err = c.Spec.Evaluate(v); err != nil {
+				if hit, err = c.Spec.Evaluate(evaluationContext); err != nil {
 					return
 				}
 				if hit {
 					return p.Value, true, nil
 				}
 			} else {
-				value, hit, err = vr.EvaluateWithReturnValue(v)
+				value, hit, err = vr.EvaluateWithReturnValue(evaluationContext)
 				if err != nil {
 					return
 				}
 				if hit {
+					if _, ok := value.(ValueReturnerNil); ok {
+						return p.Value, true, nil
+					}
 					return value, true, nil
 				}
 			}
 		} else {
-			if hit, err = c.Spec.Evaluate(v); err != nil {
+			if hit, err = c.Spec.Evaluate(evaluationContext); err != nil {
 				return
 			}
 			if hit {
@@ -89,15 +98,28 @@ func (pe *PolicyEngine) UnmarshalYAML(value *yaml.Node) error {
 		if err := p.Decode(&policy); err != nil {
 			return err
 		}
+
+		if len(policy.Conditions) == 0 {
+			return fmt.Errorf("no conditions found in policy %d", i)
+		}
+
 		pe.policies[i] = &policy
+	}
+
+	if len(pe.policies) == 0 {
+		return fmt.Errorf("no policies found")
 	}
 
 	return nil
 }
 
-func (pe *PolicyEngine) Evaluate(v map[string]any) (value any, hit bool, err error) {
+func (pe *PolicyEngine) Evaluate(evaluationContext map[string]any) (value any, hit bool, err error) {
+	if len(evaluationContext) == 0 {
+		return nil, false, fmt.Errorf("evaluation context is empty")
+	}
+
 	for _, p := range pe.policies {
-		if value, hit, err = p.Evaluate(v); err != nil {
+		if value, hit, err = p.Evaluate(evaluationContext); err != nil {
 			return
 		}
 		if hit {
