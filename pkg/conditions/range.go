@@ -3,8 +3,8 @@ package conditions
 import (
 	"fmt"
 
+	"github.com/raphaelreyna/policyauthor"
 	"github.com/raphaelreyna/policyauthor/pkg/maputils"
-	"github.com/raphaelreyna/policyauthor/pkg/policy"
 	"gopkg.in/yaml.v3"
 )
 
@@ -36,7 +36,7 @@ func (s *RangeSpec) UnmarshalYAML(value *yaml.Node) error {
 func (s *RangeSpec) Evaluate(v map[string]interface{}) (bool, error) {
 	val, found := maputils.RecursiveGet(s.Key, v)
 	if !found {
-		return false, policy.NewKeyNotFoundError(s.Key)
+		return false, policyauthor.NewKeyNotFoundError(s.Key)
 	}
 
 	switch {

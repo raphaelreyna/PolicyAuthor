@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/raphaelreyna/policyauthor/pkg/policy"
+	"github.com/raphaelreyna/policyauthor"
 )
 
 type AndSpec struct {
-	Conditions []*policy.Condition `yaml:"conditions"`
+	Conditions []*policyauthor.Condition `yaml:"conditions"`
 }
 
 func (s *AndSpec) String() string {
@@ -36,7 +36,7 @@ func (s *AndSpec) Evaluate(v map[string]any) (bool, error) {
 
 func (s *AndSpec) ValueReturnEnabled() bool {
 	for _, c := range s.Conditions {
-		if vr, ok := c.Spec.(policy.ValueReturner); ok {
+		if vr, ok := c.Spec.(policyauthor.ValueReturner); ok {
 			if vr.ValueReturnEnabled() {
 				return true
 			}
@@ -53,7 +53,7 @@ func (s *AndSpec) EvaluateWithReturnValue(v map[string]any) (any, bool, error) {
 
 	for _, c := range s.Conditions {
 		if !foundVal {
-			if vr, ok := c.Spec.(policy.ValueReturner); ok {
+			if vr, ok := c.Spec.(policyauthor.ValueReturner); ok {
 				if vr.ValueReturnEnabled() {
 					var err error
 					v, hit, err := vr.EvaluateWithReturnValue(v)
@@ -71,7 +71,7 @@ func (s *AndSpec) EvaluateWithReturnValue(v map[string]any) (any, bool, error) {
 						return nil, false, err
 					}
 					if !hit {
-						return policy.ValueReturnerNil{}, false, nil
+						return policyauthor.ValueReturnerNil{}, false, nil
 					}
 				}
 			} else {
@@ -89,7 +89,7 @@ func (s *AndSpec) EvaluateWithReturnValue(v map[string]any) (any, bool, error) {
 }
 
 type OrSpec struct {
-	Conditions []*policy.Condition `yaml:"conditions"`
+	Conditions []*policyauthor.Condition `yaml:"conditions"`
 }
 
 func (s *OrSpec) String() string {
@@ -117,7 +117,7 @@ func (s *OrSpec) Evaluate(v map[string]any) (bool, error) {
 
 func (s *OrSpec) ValueReturnEnabled() bool {
 	for _, c := range s.Conditions {
-		if vr, ok := c.Spec.(policy.ValueReturner); ok {
+		if vr, ok := c.Spec.(policyauthor.ValueReturner); ok {
 			if vr.ValueReturnEnabled() {
 				return true
 			}
@@ -128,7 +128,7 @@ func (s *OrSpec) ValueReturnEnabled() bool {
 
 func (s *OrSpec) EvaluateWithReturnValue(v map[string]any) (any, bool, error) {
 	for _, c := range s.Conditions {
-		if vr, ok := c.Spec.(policy.ValueReturner); ok {
+		if vr, ok := c.Spec.(policyauthor.ValueReturner); ok {
 			if vr.ValueReturnEnabled() {
 				var err error
 				v, hit, err := vr.EvaluateWithReturnValue(v)
@@ -144,7 +144,7 @@ func (s *OrSpec) EvaluateWithReturnValue(v map[string]any) (any, bool, error) {
 					return nil, false, err
 				}
 				if hit {
-					return policy.ValueReturnerNil{}, true, nil
+					return policyauthor.ValueReturnerNil{}, true, nil
 				}
 			}
 		} else {
@@ -153,7 +153,7 @@ func (s *OrSpec) EvaluateWithReturnValue(v map[string]any) (any, bool, error) {
 				return nil, false, err
 			}
 			if hit {
-				return policy.ValueReturnerNil{}, true, nil
+				return policyauthor.ValueReturnerNil{}, true, nil
 			}
 		}
 	}
@@ -161,7 +161,7 @@ func (s *OrSpec) EvaluateWithReturnValue(v map[string]any) (any, bool, error) {
 }
 
 type NotSpec struct {
-	Condition policy.Condition `yaml:"condition"`
+	Condition policyauthor.Condition `yaml:"condition"`
 }
 
 func (s *NotSpec) String() string {
@@ -177,14 +177,14 @@ func (s *NotSpec) Evaluate(v map[string]any) (bool, error) {
 }
 
 func (s *NotSpec) ValueReturnEnabled() bool {
-	if vr, ok := s.Condition.Spec.(policy.ValueReturner); ok {
+	if vr, ok := s.Condition.Spec.(policyauthor.ValueReturner); ok {
 		return vr.ValueReturnEnabled()
 	}
 	return false
 }
 
 func (s *NotSpec) EvaluateWithReturnValue(v map[string]any) (any, bool, error) {
-	if vr, ok := s.Condition.Spec.(policy.ValueReturner); ok {
+	if vr, ok := s.Condition.Spec.(policyauthor.ValueReturner); ok {
 		if vr.ValueReturnEnabled() {
 			v, hit, err := vr.EvaluateWithReturnValue(v)
 			if err != nil {
@@ -196,7 +196,7 @@ func (s *NotSpec) EvaluateWithReturnValue(v map[string]any) (any, bool, error) {
 			if err != nil {
 				return nil, false, err
 			}
-			return policy.ValueReturnerNil{}, !hit, nil
+			return policyauthor.ValueReturnerNil{}, !hit, nil
 		}
 	}
 	hit, err := s.Condition.Spec.Evaluate(v)

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net"
 
+	"github.com/raphaelreyna/policyauthor"
 	"github.com/raphaelreyna/policyauthor/pkg/maputils"
-	"github.com/raphaelreyna/policyauthor/pkg/policy"
 	"gopkg.in/yaml.v3"
 )
 
@@ -47,5 +47,5 @@ func (s *CIDRSpec) Evaluate(v map[string]any) (bool, error) {
 			return s.cidrRange.Contains(ip), nil
 		}
 	}
-	return false, policy.NewKeyNotFoundError(s.Key)
+	return false, policyauthor.NewKeyNotFoundError(s.Key)
 }

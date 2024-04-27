@@ -3,8 +3,8 @@ package conditions
 import (
 	"fmt"
 
+	"github.com/raphaelreyna/policyauthor"
 	"github.com/raphaelreyna/policyauthor/pkg/maputils"
-	"github.com/raphaelreyna/policyauthor/pkg/policy"
 )
 
 type SubstringSpec struct {
@@ -24,5 +24,5 @@ func (s *SubstringSpec) Evaluate(v map[string]any) (bool, error) {
 
 		return false, fmt.Errorf("ContainSpec error: value at key %s is not a string, got %T", s.Key, val)
 	}
-	return false, policy.NewKeyNotFoundError(s.Key)
+	return false, policyauthor.NewKeyNotFoundError(s.Key)
 }

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/raphaelreyna/policyauthor"
 	"github.com/raphaelreyna/policyauthor/pkg/maputils"
-	"github.com/raphaelreyna/policyauthor/pkg/policy"
 	"gopkg.in/yaml.v3"
 )
 
@@ -73,5 +73,5 @@ func (s *TimeSpec) Evaluate(v map[string]interface{}) (bool, error) {
 			return s.before.Before(t) && s.after.After(t), nil
 		}
 	}
-	return false, policy.NewKeyNotFoundError(s.Key)
+	return false, policyauthor.NewKeyNotFoundError(s.Key)
 }

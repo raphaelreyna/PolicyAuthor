@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/raphaelreyna/policyauthor"
 	"github.com/raphaelreyna/policyauthor/pkg/maputils"
-	"github.com/raphaelreyna/policyauthor/pkg/policy"
 	"gopkg.in/yaml.v3"
 )
 
@@ -49,7 +49,7 @@ func (s *RegexSpec) Evaluate(v map[string]interface{}) (bool, error) {
 
 		return false, fmt.Errorf("key %s is not a string", s.Key)
 	}
-	return false, policy.NewKeyNotFoundError(s.Key)
+	return false, policyauthor.NewKeyNotFoundError(s.Key)
 }
 
 func (s *RegexSpec) ValueReturnEnabled() bool {
@@ -69,7 +69,7 @@ func (s *RegexSpec) EvaluateWithReturnValue(v map[string]interface{}) (interface
 
 		return formatWithRegex(s.r, val, s.Return), true, nil
 	}
-	return nil, false, policy.NewKeyNotFoundError(s.Key)
+	return nil, false, policyauthor.NewKeyNotFoundError(s.Key)
 }
 
 // formatWithRegex takes a compiled regex, a target string, and a format string.

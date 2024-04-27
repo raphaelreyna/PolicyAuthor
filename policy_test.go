@@ -1,10 +1,10 @@
-package policy_test
+package policyauthor_test
 
 import (
 	"testing"
 
+	"github.com/raphaelreyna/policyauthor"
 	"github.com/raphaelreyna/policyauthor/pkg/conditions"
-	"github.com/raphaelreyna/policyauthor/pkg/policy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v3"
@@ -32,9 +32,9 @@ policies:
 `
 
 	p := struct {
-		Policies *policy.PolicyEngine `yaml:"policies"`
+		Policies *policyauthor.PolicyEngine `yaml:"policies"`
 	}{
-		Policies: &policy.PolicyEngine{},
+		Policies: &policyauthor.PolicyEngine{},
 	}
 
 	err := yaml.Unmarshal([]byte(conf), &p)
@@ -52,7 +52,7 @@ type TestConfig struct {
 }
 
 func TestMain(t *testing.T) {
-	policy.RegisterConditions(conditions.AllConditionsMap())
+	policyauthor.RegisterConditions(conditions.AllConditionsMap())
 
 	var tests = map[string]TestConfig{
 		"basic": {
@@ -202,9 +202,9 @@ policies:
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			p := struct {
-				Policies *policy.PolicyEngine `yaml:"policies"`
+				Policies *policyauthor.PolicyEngine `yaml:"policies"`
 			}{
-				Policies: &policy.PolicyEngine{},
+				Policies: &policyauthor.PolicyEngine{},
 			}
 
 			err := yaml.Unmarshal([]byte(test.Config), &p)
@@ -219,7 +219,7 @@ policies:
 }
 
 func TestEdgeCases(t *testing.T) {
-	policy.RegisterConditions(conditions.AllConditionsMap())
+	policyauthor.RegisterConditions(conditions.AllConditionsMap())
 
 	var edgeCaseTests = map[string]TestConfig{
 		"empty_map": {
@@ -259,9 +259,9 @@ policies:
 	for name, test := range edgeCaseTests {
 		t.Run(name, func(t *testing.T) {
 			p := struct {
-				Policies *policy.PolicyEngine `yaml:"policies"`
+				Policies *policyauthor.PolicyEngine `yaml:"policies"`
 			}{
-				Policies: &policy.PolicyEngine{},
+				Policies: &policyauthor.PolicyEngine{},
 			}
 
 			err := yaml.Unmarshal([]byte(test.Config), &p)

@@ -1,4 +1,4 @@
-package policy
+package policyauthor
 
 type ConditionSpec interface {
 	String() string

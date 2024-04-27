@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/raphaelreyna/policyauthor"
 	"github.com/raphaelreyna/policyauthor/pkg/maputils"
-	"github.com/raphaelreyna/policyauthor/pkg/policy"
 )
 
 type EqualSpec struct {
@@ -20,7 +20,7 @@ func (s *EqualSpec) String() string {
 func (s *EqualSpec) Evaluate(v map[string]any) (bool, error) {
 	vv, found := maputils.RecursiveGet(s.Key, v)
 	if !found {
-		return false, policy.NewKeyNotFoundError(s.Key)
+		return false, policyauthor.NewKeyNotFoundError(s.Key)
 	}
 
 	// TODO(raphaelreyna): performance could probably be improved here
