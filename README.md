@@ -15,6 +15,7 @@ The PolicyAuthor package is a versatile library designed to evaluate policies de
 - exists
 - range
 - regex
+- substring
 - cidr
 - time
 
