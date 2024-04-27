@@ -1,6 +1,34 @@
 # PolicyAuthor
 
-The PolicyAuthor package is a versatile library designed to evaluate policies defined in YAML against Go data structures. This package allows users to define complex policy rules using conditions such as equality checks, CIDR matches, and regular expressions, and apply these policies to dynamically evaluate data.
+The PolicyAuthor package is a versatile library designed to evaluate policies defined in YAML against Go data structures. This package allows users to define complex policy rules using conditions such as equality checks, CIDR matches, regular expressions, etc. and apply these policies to dynamically evaluate data.
+
+## Example config made possible by PolicyAuthor
+
+```yaml
+server:
+  addr: :8080
+  tls: {}
+  routing:
+    # PolicyAuthor YAML starts here
+    - value: "https://mozilla.mysite.com"
+      conditions:
+        - type: regex
+          spec:
+            key: "headers.User-Agent"
+            pattern: "^Mozilla/5.0.*"
+    - value: "https://auth.mysite.com"
+      conditions:
+        - type: and
+          spec:
+            conditions:
+              - type: equal
+                spec:
+                  key: "remote_addr"
+                  value: "127.0.0.1"
+              - type: exists
+                spec:
+                  key: "headers.X-My-Auth"
+```
 
 ## Features
 
@@ -19,7 +47,7 @@ The PolicyAuthor package is a versatile library designed to evaluate policies de
 - cidr
 - time
 
-## Example: Implementing Access Control
+## Dev Example: Implementing Access Control
 
 Here’s how you can use PolicyAuthor to enforce access control based on user location and request properties:
 
