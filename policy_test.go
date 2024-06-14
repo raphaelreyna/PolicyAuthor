@@ -58,7 +58,7 @@ func TestMain(t *testing.T) {
 		"basic": {
 			Config: `
 policies:
-- value: latexmk
+- valueFrom: my_key
   conditions:
   - type: and
     spec:
@@ -79,6 +79,7 @@ policies:
 				{
 					Map: map[string]any{
 						"remote_addr": "foo",
+						"my_key":      "latexmk",
 						"header": map[string]any{
 							"X-Forwarded-For": "12.1.0.1",
 						},
